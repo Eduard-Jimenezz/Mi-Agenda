@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi Agenda Freelance</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #f7f6f2;
+    --surface: #ffffff;
+    --surface2: #f0efe9;
+    --border: #e2e0d8;
+    --border2: #cccab8;
+    --text: #1a1a18;
+    --text2: #6b6a62;
+    --text3: #9e9d94;
+    --teal: #0f6e56;
+    --teal-light: #e1f5ee;
+    --teal-mid: #1d9e75;
+    --amber: #854f0b;
+    --amber-light: #faeeda;
+    --blue: #185fa5;
+    --blue-light: #e6f1fb;
+    --red: #a32d2d;
+    --red-light: #fcebeb;
+    --gray-light: #f1efe8;
+    --gray-text: #444441;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  header h1 {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  header span {
+    font-size: 12px;
+    color: var(--text3);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .layout {
+    display: flex;
+    min-height: calc(100vh - 57px);
+  }
+
+  nav {
+    width: 200px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 1.25rem 0.75rem;
+    flex-shrink: 0;
+  }
+
+  nav p {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--text3);
+    text-transform: uppercase;
+    padding: 0 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 12px;
+    border: none;
+    background: transparent;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text2);
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .nav-btn:hover { background: var(--surface2); color: var(--text); }
+  .nav-btn.active { background: var(--teal-light); color: var(--teal); font-weight: 500; }
+
+  .nav-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+  main {
+    flex: 1;
+    padding: 1.5rem;
+    max-width: 860px;
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .page-title {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.25rem;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    margin-bottom: 1.25rem;
+  }
+
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+  }
+
+  .stat-label { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
+  .stat-val { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.25rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .card-head {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 0.9rem;
+  }
+
+  label { font-size: 12px; color: var(--text2); display: block; margin-bottom: 4px; }
+
+  input[type=text], input[type=number], select, textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    outline: none;
+    transition: border 0.15s;
+  }
+
+  input[type=text]:focus, input[type=number]:focus, select:focus, textarea:focus {
+    border-color: var(--teal-mid);
+    background: var(--surface);
+  }
+
+  textarea { resize: vertical; min-height: 72px; }
+
+  .field { margin-bottom: 10px; }
+
+  .row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .row > * { flex: 1; min-width: 120px; }
+
+  .btn {
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border2);
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .btn:hover { background: var(--surface2); }
+
+  .btn-primary {
+    background: var(--teal);
+    color: white;
+    border-color: var(--teal);
+  }
+
+  .btn-primary:hover { background: #0a5040; }
+
+  .btn-danger {
+    color: var(--red);
+    border-color: #f0c0c0;
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  .btn-danger:hover { background: var(--red-light); }
+
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  .b-green { background: var(--teal-light); color: var(--teal); }
+  .b-amber { background: var(--amber-light); color: var(--amber); }
+  .b-blue  { background: var(--blue-light); color: var(--blue); }
+  .b-gray  { background: var(--gray-light); color: var(--gray-text); }
+  .b-red   { background: var(--red-light); color: var(--red); }
+
+  .item {
+    padding: 11px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .item:last-child { border-bottom: none; }
+  .item-title { font-size: 14px; font-weight: 500; margin-bottom: 3px; }
+  .item-meta { font-size: 12px; color: var(--text3); }
+
+  .empty {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text3);
+    font-size: 13px;
+  }
+
+  .check-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .check-row:last-child { border-bottom: none; }
+  .check-row input[type=checkbox] { margin-top: 2px; flex-shrink: 0; accent-color: var(--teal-mid); width: 15px; height: 15px; cursor: pointer; }
+  .check-text { flex: 1; font-size: 13px; }
+  .check-text.done { text-decoration: line-through; color: var(--text3); }
+
+  .sem-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text2);
+    margin: 0.9rem 0 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; align-items: center; }
+
+  .meta-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap; }
+
+  .tip {
+    background: var(--teal-light);
+    border: 1px solid #9fe1cb;
+    border-radius: var(--radius);
+    padding: 0.9rem 1.1rem;
+    font-size: 13px;
+    color: var(--teal);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 600px) {
+    nav { width: 160px; }
+    main { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Mi Agenda Freelance</h1>
+  <span id="fecha-hoy"></span>
+</header>
+
+<div class="layout">
+  <nav>
+    <p>Menú</p>
+    <button class="nav-btn active" onclick="showTab('resumen', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Resumen
+    </button>
+    <button class="nav-btn" onclick="showTab('clientes', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      Clientes
+    </button>
+    <button class="nav-btn" onclick="showTab('tareas', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Tareas
+    </button>
+    <button class="nav-btn" onclick="showTab('plan', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Mi plan
+    </button>
+    <button class="nav-btn" onclick="showTab('notas', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
+      Notas
+    </button>
+    <button class="nav-btn" onclick="showTab('cobros', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Cobros
+    </button>
+  </nav>
+
+  <main>
+
+    <!-- RESUMEN -->
+    <div id="tab-resumen" class="panel active">
+      <p class="page-title">Resumen</p>
+      <div class="stat-grid" id="stats"></div>
+      <div class="card">
+        <p class="card-head">Últimos clientes</p>
+        <div id="res-clientes"></div>
+      </div>
+      <div class="card">
+        <p class="card-head">Tareas pendientes</p>
+        <div id="res-tareas"></div>
+      </div>
+    </div>
+
+    <!-- CLIENTES -->
+    <div id="tab-clientes" class="panel">
+      <p class="page-title">Clientes</p>
+      <div class="card">
+        <p class="card-head">Agregar cliente</p>
+        <div class="row">
+          <div class="field"><label>Nombre / Negocio *</label><input type="text" id="c-nombre" placeholder="Ej: Panadería La Rosa"></div>
+          <div class="field"><label>Servicio</label>
+            <select id="c-servicio">
+              <option>Redacción de contenido</option>
+              <option>Traducción</option>
+              <option>Redes sociales</option>
+              <option>Asistente virtual</option>
+              <option>Copywriting web</option>
+              <option>Otro</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field"><label>Monto acordado ($)</label><input type="number" id="c-monto" placeholder="100"></div>
+          <div class="field"><label>Estado</label>
+            <select id="c-estado">
+              <option value="prospecto">Prospecto</option>
+              <option value="activo">Activo</option>
+              <option value="completado">Completado</option>
+              <option value="pausado">Pausado</option>
+            </select>
+          </div>
+        </div>
+        <div class="field"><label>Contacto (email, red social, teléfono)</label><input type="text" id="c-contacto" placeholder="correo@ejemplo.com"></div>
+        <div class="field"><label>Notas</label><textarea id="c-notas" placeholder="Detalles del proyecto, qué quiere, plazos..."></textarea></div>
+        <button class="btn btn-primary" onclick="addCliente()">+ Guardar cliente</button>
+      </div>
+      <div id="lista-clientes"></div>
+    </div>
+
+    <!-- TAREAS -->
+    <div id="tab-tareas" class="panel">
+      <p class="page-title">Tareas</p>
+      <div class="card">
+        <p class="card-head">Nueva tarea</p>
+        <div class="row">
+          <div class="field" style="flex:2"><label>Tarea *</label><input type="text" id="t-titulo" placeholder="Ej: Escribir 3 posts para cliente X"></div>
+          <div class="field"><label>Prioridad</label>
+            <select id="t-prio">
+              <option value="alta">Alta</option>
+              <option value="media" selected>Media</option>
+              <option value="baja">Baja</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field"><label>Fecha límite</label><input type="text" id="t-fecha" placeholder="Ej: 30 mayo"></div>
+          <div class="field"><label>Cliente</label><input type="text" id="t-cliente" placeholder="Nombre del cliente"></div>
+        </div>
+        <button class="btn btn-primary" onclick="addTarea()">+ Agregar tarea</button>
+      </div>
+      <div id="lista-tareas"></div>
+    </div>
+
+    <!-- PLAN -->
+    <div id="tab-plan" class="panel">
+      <p class="page-title">Mi plan de 4 semanas</p>
+      <div class="tip">Marca cada paso cuando lo completes. Tu meta: llegar a $100 en el primer mes.</div>
+      <div class="card">
+        <div id="plan-lista"></div>
+      </div>
+      <p class="page-title" style="margin-top:1.5rem;font-size:16px">Servicios que puedo ofrecer</p>
+      <div class="card">
+        <div id="servicios-lista"></div>
+      </div>
+    </div>
+
+    <!-- NOTAS -->
+    <div id="tab-notas" class="panel">
+      <p class="page-title">Notas</p>
+      <div class="card">
+        <p class="card-head">Nueva nota</p>
+        <div class="field"><label>Título</label><input type="text" id="n-titulo" placeholder="Ej: Mensaje para ofrecer servicios"></div>
+        <div class="field"><label>Contenido</label><textarea id="n-cuerpo" placeholder="Escribe aquí ideas, frases útiles, links, información importante..." style="min-height:100px"></textarea></div>
+        <button class="btn btn-primary" onclick="addNota()">+ Guardar nota</button>
+      </div>
+      <div id="lista-notas"></div>
+    </div>
+
+    <!-- COBROS -->
+    <div id="tab-cobros" class="panel">
+      <p class="page-title">Registro de cobros</p>
+      <div class="card">
+        <p class="card-head">Registrar pago recibido</p>
+        <div class="row">
+          <div class="field"><label>Cliente</label><input type="text" id="p-cliente" placeholder="Nombre del cliente"></div>
+          <div class="field"><label>Monto recibido ($) *</label><input type="number" id="p-monto" placeholder="100"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>Fecha</label><input type="text" id="p-fecha" placeholder="Ej: 25 mayo 2026"></div>
+          <div class="field"><label>Método de pago</label>
+            <select id="p-metodo">
+              <option>Zelle</option>
+              <option>PayPal</option>
+              <option>Transferencia bancaria</option>
+              <option>Venmo</option>
+              <option>Otro</option>
+            </select>
+          </div>
+        </div>
+        <div class="field"><label>Notas</label><input type="text" id="p-notas" placeholder="Ej: Pago del proyecto X, primera cuota..."></div>
+        <button class="btn btn-primary" onclick="addPago()">+ Registrar pago</button>
+      </div>
+      <div class="stat-grid" style="margin-top:1rem">
+        <div class="stat"><p class="stat-label">Total recibido</p><p class="stat-val" id="total-cobros">$0</p></div>
+        <div class="stat"><p class="stat-label">Este mes</p><p class="stat-val" id="total-mes">$0</p></div>
+        <div class="stat"><p class="stat-label">Pagos registrados</p><p class="stat-val" id="num-pagos">0</p></div>
+      </div>
+      <div id="lista-pagos"></div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+const KEY = 'agenda_freelance_v2';
+let data = JSON.parse(localStorage.getItem(KEY) || 'null') || {
+  clientes: [],
+  tareas: [],
+  notas: [],
+  pagos: [],
+  plan: [
+    { sem: 'Semana 1', txt: 'Elegir el servicio que voy a ofrecer', done: false },
+    { sem: 'Semana 1', txt: 'Preparar mi mensaje de oferta con ayuda de Claude', done: false },
+    { sem: 'Semana 1', txt: 'Crear perfil en LinkedIn y Facebook', done: false },
+    { sem: 'Semana 2', txt: 'Contactar 20–30 negocios pequeños', done: false },
+    { sem: 'Semana 2', txt: 'Publicar en grupos de emprendedores latinos en Facebook', done: false },
+    { sem: 'Semana 2', txt: 'Ofrecer primer trabajo a precio bajo para conseguir reseña', done: false },
+    { sem: 'Semana 3', txt: 'Entregar primer trabajo con calidad excelente', done: false },
+    { sem: 'Semana 3', txt: 'Pedir recomendación escrita al primer cliente', done: false },
+    { sem: 'Semana 3', txt: 'Conseguir segundo cliente con precio normal', done: false },
+    { sem: 'Semana 4', txt: 'Tener 1–2 clientes activos y superar $100', done: false },
+    { sem: 'Semana 4', txt: 'Buscar clientes recurrentes para ingreso mensual estable', done: false }
+  ],
+  servicios: [
+    { nombre: 'Redacción de contenido', rango: '$50–150/cliente', nota: 'Posts de blog, textos para redes sociales, emails de marketing.' },
+    { nombre: 'Traducción inglés–español', rango: '$80–200/proyecto', nota: 'Alta demanda. Con Claude puedes entregar traducciones de calidad rápido.' },
+    { nombre: 'Gestión de redes sociales', rango: '$30–80/mes por cliente', nota: '8–12 posts al mes. Con 2–3 clientes = $100+ mensuales.' },
+    { nombre: 'Asistente virtual', rango: '$50–120/proyecto', nota: 'Emails, investigaciones, propuestas, organización de info.' },
+    { nombre: 'Copywriting web', rango: '$100–300/proyecto', nota: 'Textos de página web. Un solo proyecto puede cubrir la meta.' }
+  ]
+};
+
+function save() { localStorage.setItem(KEY, JSON.stringify(data)); }
+
+const estadoMap = {
+  prospecto: ['b-blue', 'Prospecto'],
+  activo: ['b-green', 'Activo'],
+  completado: ['b-gray', 'Completado'],
+  pausado: ['b-amber', 'Pausado']
+};
+const prioMap = {
+  alta: ['b-red', 'Alta'],
+  media: ['b-amber', 'Media'],
+  baja: ['b-gray', 'Baja']
+};
+
+function badge(map, val) {
+  const [cls, label] = map[val] || ['b-gray', val];
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+
+function showTab(name, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
+  renderAll();
+}
+
+function renderStats() {
+  const totalCobrado = data.pagos.reduce((s, p) => s + Number(p.monto), 0);
+  const activos = data.clientes.filter(c => c.estado === 'activo').length;
+  const pendientes = data.tareas.filter(t => !t.done).length;
+  const planDone = data.plan.filter(p => p.done).length;
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><p class="stat-label">Total cobrado</p><p class="stat-val">$${totalCobrado}</p></div>
+    <div class="stat"><p class="stat-label">Clientes activos</p><p class="stat-val">${activos}</p></div>
+    <div class="stat"><p class="stat-label">Tareas pendientes</p><p class="stat-val">${pendientes}</p></div>
+    <div class="stat"><p class="stat-label">Plan completado</p><p class="stat-val">${planDone}/${data.plan.length}</p></div>
+  `;
+  const rc = document.getElementById('res-clientes');
+  const ult = data.clientes.slice(-4).reverse();
+  rc.innerHTML = ult.length
+    ? ult.map(c => `<div class="item"><div class="meta-row"><p class="item-title">${c.nombre}</p>${badge(estadoMap, c.estado)}</div><p class="item-meta">${c.servicio} · $${c.monto}</p></div>`).join('')
+    : `<p class="empty">Aún no tienes clientes guardados</p>`;
+  const rt = document.getElementById('res-tareas');
+  const pend = data.tareas.filter(t => !t.done).slice(0, 5);
+  rt.innerHTML = pend.length
+    ? pend.map(t => `<div class="item"><div class="meta-row"><p class="item-title">${t.titulo}</p>${badge(prioMap, t.prioridad)}</div><p class="item-meta">${[t.fecha, t.cliente].filter(Boolean).join(' · ')}</p></div>`).join('')
+    : `<p class="empty">No hay tareas pendientes. ¡Buen trabajo!</p>`;
+}
+
+function renderClientes() {
+  const el = document.getElementById('lista-clientes');
+  if (!data.clientes.length) { el.innerHTML = `<p class="empty">Agrega tu primer cliente arriba.</p>`; return; }
+  el.innerHTML = data.clientes.map((c, i) => `
+    <div class="card">
+      <div class="meta-row">
+        <div><p class="item-title">${c.nombre}</p><p class="item-meta">${c.servicio} · $${c.monto}${c.contacto ? ' · ' + c.contacto : ''}</p></div>
+        <div style="display:flex;gap:6px;align-items:center">${badge(estadoMap, c.estado)}<button class="btn btn-danger" onclick="delCliente(${i})">Eliminar</button></div>
+      </div>
+      ${c.notas ? `<p style="font-size:13px;color:var(--text2);margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">${c.notas}</p>` : ''}
+      <div class="actions">
+        <select onchange="cambiarEstado(${i},this.value)" style="width:auto;font-size:12px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg)">
+          <option value="">Cambiar estado...</option>
+          <option value="prospecto">Prospecto</option>
+          <option value="activo">Activo</option>
+          <option value="completado">Completado</option>
+          <option value="pausado">Pausado</option>
+        </select>
+      </div>
+    </div>`).join('');
+}
+
+function renderTareas() {
+  const el = document.getElementById('lista-tareas');
+  const pend = data.tareas.filter(t => !t.done);
+  const done = data.tareas.filter(t => t.done);
+  let html = '';
+  if (pend.length) {
+    html += `<div class="card"><p class="card-head">Pendientes (${pend.length})</p>`;
+    html += pend.map(t => {
+      const i = data.tareas.indexOf(t);
+      return `<div class="check-row">
+        <input type="checkbox" onchange="toggleTarea(${i})">
+        <div style="flex:1"><span class="check-text">${t.titulo}</span>${t.fecha || t.cliente ? `<br><span style="font-size:11px;color:var(--text3)">${[t.fecha,t.cliente].filter(Boolean).join(' · ')}</span>` : ''}</div>
+        ${badge(prioMap, t.prioridad)}
+        <button class="btn btn-danger" onclick="delTarea(${i})">×</button>
+      </div>`;
+    }).join('');
+    html += `</div>`;
+  }
+  if (done.length) {
+    html += `<div class="card"><p class="card-head">Completadas (${done.length})</p>`;
+    html += done.map(t => {
+      const i = data.tareas.indexOf(t);
+      return `<div class="check-row">
+        <input type="checkbox" checked onchange="toggleTarea(${i})">
+        <span class="check-text done" style="flex:1">${t.titulo}</span>
+        <button class="btn btn-danger" onclick="delTarea(${i})">×</button>
+      </div>`;
+    }).join('');
+    html += `</div>`;
+  }
+  if (!pend.length && !done.length) html = `<p class="empty">Agrega tu primera tarea arriba.</p>`;
+  el.innerHTML = html;
+}
+
+function renderPlan() {
+  const sems = [...new Set(data.plan.map(p => p.sem))];
+  document.getElementById('plan-lista').innerHTML = sems.map(sem => {
+    const items = data.plan.filter(p => p.sem === sem);
+    return `<p class="sem-label">${sem}</p>` + items.map(p => {
+      const i = data.plan.indexOf(p);
+      return `<div class="check-row"><input type="checkbox" ${p.done?'checked':''} onchange="togglePlan(${i})"><span class="check-text ${p.done?'done':''}" style="flex:1">${p.txt}</span></div>`;
+    }).join('');
+  }).join('');
+
+  document.getElementById('servicios-lista').innerHTML = data.servicios.map(s => `
+    <div class="item">
+      <div class="meta-row">
+        <p class="item-title">${s.nombre}</p>
+        <span class="badge b-green">${s.rango}</span>
+      </div>
+      <p class="item-meta">${s.nota}</p>
+    </div>`).join('');
+}
+
+function renderNotas() {
+  const el = document.getElementById('lista-notas');
+  el.innerHTML = data.notas.length
+    ? data.notas.map((n, i) => `
+      <div class="card">
+        <div class="meta-row" style="margin-bottom:${n.cuerpo?'8px':'0'}">
+          <p class="item-title">${n.titulo || 'Sin título'}</p>
+          <button class="btn btn-danger" onclick="delNota(${i})">Eliminar</button>
+        </div>
+        ${n.cuerpo ? `<p style="font-size:13px;color:var(--text2);white-space:pre-wrap;border-top:1px solid var(--border);padding-top:8px">${n.cuerpo}</p>` : ''}
+      </div>`).join('')
+    : `<p class="empty">Guarda aquí ideas, frases de oferta, links útiles, etc.</p>`;
+}
+
+function renderCobros() {
+  const total = data.pagos.reduce((s, p) => s + Number(p.monto), 0);
+  document.getElementById('total-cobros').textContent = '$' + total;
+  document.getElementById('num-pagos').textContent = data.pagos.length;
+  const hoy = new Date();
+  const mesActual = data.pagos.filter(p => {
+    if (!p.fechaTs) return false;
+    const d = new Date(p.fechaTs);
+    return d.getMonth() === hoy.getMonth() && d.getFullYear() === hoy.getFullYear();
+  }).reduce((s, p) => s + Number(p.monto), 0);
+  document.getElementById('total-mes').textContent = '$' + mesActual;
+
+  const el = document.getElementById('lista-pagos');
+  el.innerHTML = data.pagos.length
+    ? `<div class="card"><p class="card-head">Historial de pagos</p>` + data.pagos.slice().reverse().map((p, ri) => {
+        const i = data.pagos.length - 1 - ri;
+        return `<div class="item">
+          <div class="meta-row">
+            <div><p class="item-title">$${p.monto} <span style="font-weight:400;color:var(--text2)">— ${p.cliente || 'Sin cliente'}</span></p>
+            <p class="item-meta">${p.metodo}${p.fecha ? ' · ' + p.fecha : ''}${p.notas ? ' · ' + p.notas : ''}</p></div>
+            <button class="btn btn-danger" onclick="delPago(${i})">×</button>
+          </div>
+        </div>`;
+      }).join('') + `</div>`
+    : `<p class="empty">Registra aquí cada pago que recibas.</p>`;
+}
+
+function renderAll() {
+  renderStats();
+  renderClientes();
+  renderTareas();
+  renderPlan();
+  renderNotas();
+  renderCobros();
+}
+
+function addCliente() {
+  const nombre = document.getElementById('c-nombre').value.trim();
+  if (!nombre) { alert('Escribe el nombre del cliente'); return; }
+  data.clientes.push({
+    nombre,
+    servicio: document.getElementById('c-servicio').value,
+    monto: document.getElementById('c-monto').value || '0',
+    estado: document.getElementById('c-estado').value,
+    contacto: document.getElementById('c-contacto').value.trim(),
+    notas: document.getElementById('c-notas').value.trim()
+  });
+  ['c-nombre','c-monto','c-contacto','c-notas'].forEach(id => document.getElementById(id).value = '');
+  save(); renderAll();
+}
+
+function delCliente(i) {
+  if (confirm('¿Eliminar este cliente?')) { data.clientes.splice(i, 1); save(); renderAll(); }
+}
+
+function cambiarEstado(i, v) {
+  if (v) { data.clientes[i].estado = v; save(); renderAll(); }
+}
+
+function addTarea() {
+  const titulo = document.getElementById('t-titulo').value.trim();
+  if (!titulo) { alert('Escribe la tarea'); return; }
+  data.tareas.push({
+    titulo,
+    prioridad: document.getElementById('t-prio').value,
+    fecha: document.getElementById('t-fecha').value.trim(),
+    cliente: document.getElementById('t-cliente').value.trim(),
+    done: false
+  });
+  ['t-titulo','t-fecha','t-cliente'].forEach(id => document.getElementById(id).value = '');
+  save(); renderAll();
+}
+
+function toggleTarea(i) { data.tareas[i].done = !data.tareas[i].done; save(); renderAll(); }
+function delTarea(i) { data.tareas.splice(i, 1); save(); renderAll(); }
+function togglePlan(i) { data.plan[i].done = !data.plan[i].done; save(); renderAll(); }
+
+function addNota() {
+  const cuerpo = document.getElementById('n-cuerpo').value.trim();
+  if (!cuerpo) { alert('Escribe algo en la nota'); return; }
+  data.notas.unshift({ titulo: document.getElementById('n-titulo').value.trim(), cuerpo });
+  ['n-titulo','n-cuerpo'].forEach(id => document.getElementById(id).value = '');
+  save(); renderAll();
+}
+
+function delNota(i) {
+  if (confirm('¿Eliminar esta nota?')) { data.notas.splice(i, 1); save(); renderAll(); }
+}
+
+function addPago() {
+  const monto = document.getElementById('p-monto').value;
+  if (!monto || Number(monto) <= 0) { alert('Escribe el monto recibido'); return; }
+  data.pagos.push({
+    monto,
+    cliente: document.getElementById('p-cliente').value.trim(),
+    fecha: document.getElementById('p-fecha').value.trim(),
+    metodo: document.getElementById('p-metodo').value,
+    notas: document.getElementById('p-notas').value.trim(),
+    fechaTs: new Date().toISOString()
+  });
+  ['p-cliente','p-monto','p-fecha','p-notas'].forEach(id => document.getElementById(id).value = '');
+  save(); renderAll();
+}
+
+function delPago(i) {
+  if (confirm('¿Eliminar este pago?')) { data.pagos.splice(i, 1); save(); renderAll(); }
+}
+
+const dias = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const hoy = new Date();
+document.getElementById('fecha-hoy').textContent = `${dias[hoy.getDay()]}, ${hoy.getDate()} de ${meses[hoy.getMonth()]} de ${hoy.getFullYear()}`;
+
+renderAll();
+</script>
+</body>
+</html>
